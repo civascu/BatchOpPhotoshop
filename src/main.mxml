@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" historyManagementEnabled="false">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.csawlib.photoshop.Photoshop;
+			import com.adobe.photoshop.Application;
+			
+			import flash.filesystem.File;
+			
+			import mx.controls.Text;
+
+			[Bindable]
+			private var hostName:String = HostObject.mainExtension;
+			private var folder:File;
+			
+			[Bindable]
+			private var workingFolder:String;
+
+			[Bindable]
+			private var targetFolder:String;
+			
+			private function browseForFolder():void {
+				folder = new File();
+				folder.addEventListener(Event.SELECT, onFolderSelect);
+				folder.browseForDirectory("Alege folder");
+			}
+
+			private function browseForSaveFolder():void {
+				folder = new File();
+				folder.addEventListener(Event.SELECT, onOutputFolderSelect);
+				folder.browseForDirectory("Alege folder");
+			}
+			
+			private function onFolderSelect(event:Event):void {
+				workingFolder = File(event.currentTarget).nativePath;
+			}
+
+			private function onOutputFolderSelect(event:Event):void {
+				targetFolder = File(event.currentTarget).nativePath;
+			}
+			
+			private function start():void {
+				var braif:BatchResizeAllInFolderPhotoshop = new BatchResizeAllInFolderPhotoshop(workingFolder, extensie.text, Number(tWidth.text), Number(tHeight.text), saveAsCopy.selected, targetFolder);	
+				braif.run();
+				
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox height="100%" width="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Form>
+			<mx:FormItem label="Director:">
+				<mx:HBox>
+					<mx:Label id="folderPath" text="{workingFolder}" />
+					<mx:Button label="Browse" click="browseForFolder()"/>
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem label="Extensie:">
+				<mx:TextInput text=".jpg" id="extensie"/>
+			</mx:FormItem>
+			<mx:FormItem label="Latime:">
+				<mx:TextInput text="800" id="tWidth"/>
+			</mx:FormItem>
+			<mx:FormItem label="Inaltime:">
+				<mx:TextInput text="640" id="tHeight"/>
+			</mx:FormItem>
+			<mx:FormItem> 
+				<mx:CheckBox label="Salveaza ca o copie" id="saveAsCopy"/>
+			</mx:FormItem>
+			<mx:FormItem label="Salveaza in:" visible="{saveAsCopy.selected}">
+				<mx:HBox>
+					<mx:Label id="folderPath0" text="{targetFolder}" />
+					<mx:Button label="Browse" click="browseForSaveFolder()"/>
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Button label="Start" click="start()" enabled="{hostName.indexOf('photoshop') > -1}"/>
+	</mx:VBox>
+</mx:Application>
